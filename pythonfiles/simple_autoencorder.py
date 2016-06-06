@@ -30,10 +30,8 @@ decoder = Model(input=encoded_input, output=decoder_layer(encoded_input))
 
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
-x_train = x_train.astype('float32') / 255.
-x_test = x_test.astype('float32') / 255.
-x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
-x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
+x_train = (x_train.astype('float32')+1)/2.0
+x_test = (x_test.astype('float32')+1)/2.0
 print x_train.shape
 print x_test.shape
 
