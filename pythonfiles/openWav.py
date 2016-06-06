@@ -13,8 +13,4 @@ def loadData():
     
     y_test = np.reshape(y[0:testInterval], (100, 44100))
     y_train = np.reshape(y[testInterval:], (900, 44100))
-    print(y_test.shape)
-    print(y_train.shape)
-    return y_test#, y_train
-
-loadData()
+    return y_test, y_train
