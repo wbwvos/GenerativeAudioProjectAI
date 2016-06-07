@@ -37,7 +37,7 @@ print x_test.shape
 
 autoencoder.fit(x_train, x_train,
                 nb_epoch=50,
-                batch_size=256,
+                batch_size=10,
                 shuffle=True,
                 validation_data=(x_test, x_test))
                 
