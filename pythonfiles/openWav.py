@@ -18,4 +18,3 @@ def loadData():
     
     return X_test, X_train
     
-loadData()

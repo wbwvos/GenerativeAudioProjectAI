@@ -6,7 +6,7 @@ import openWav
 x_test, x_train = openWav.loadData()
 
 # this is the size of our encoded representations
-encoding_dim = 441  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+encoding_dim = 882  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
 
 # this is our input placeholder
 input_img = Input(shape=(44100,))
@@ -36,7 +36,7 @@ print x_train.shape
 print x_test.shape
 
 autoencoder.fit(x_train, x_train,
-                nb_epoch=20,
+                nb_epoch=50,
                 batch_size=10,
                 shuffle=True,
                 validation_data=(x_test, x_test))
