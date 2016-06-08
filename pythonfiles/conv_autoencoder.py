@@ -25,3 +25,13 @@ decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
 
 autoencoder = Model(input_sample, decoded)
 autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
+
+autoencoder.fit(x_train, x_train,
+                nb_epoch=50,
+                batch_size=32,
+                shuffle=True,
+                validation_data=(x_test, x_test))
+                
+decoded_samples = autoencoder.predict(x_test)
+
+print decoded_samples[1]
