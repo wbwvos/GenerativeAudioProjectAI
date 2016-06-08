@@ -1,8 +1,12 @@
 from keras.layers import Input, Dense, Convolution1D, AveragePooling1D, UpSampling1D
 from keras.models import Model
 import openWav
+import numpy as np
 
 x_train, x_test, sr = openWav.loadData()
+
+x_train = np.resize(x_train, (x_train.shape[0], sr, 1)).astype(np.float32)
+x_test = np.resize(x_test, (x_test.shape[0], sr, 1)).astype(np.float32)
 
 print(x_train.shape)
 print(x_test.shape)
