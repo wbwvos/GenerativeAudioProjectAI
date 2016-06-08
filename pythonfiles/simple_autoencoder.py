@@ -3,17 +3,17 @@ from keras.models import Model
 import numpy as np
 import openWav 
 
-x_test, x_train = openWav.loadData()
+x_test, x_train, sr = openWav.loadData()
 
 # this is the size of our encoded representations
-encoding_dim = 882  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+encoding_dim = 128  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
 
 # this is our input placeholder
-input_img = Input(shape=(44100,))
+input = Input(shape=(sr,))
 # "encoded" is the encoded representation of the input
-encoded = Dense(encoding_dim, activation='relu')(input_img)
+encoded = Dense(encoding_dim, activation='tanh')(input)
 # "decoded" is the lossy reconstruction of the input
-decoded = Dense(44100, activation='sigmoid')(encoded)
+decoded = Dense(sr, activation='tanh')(encoded)
 
 # this model maps an input to its reconstruction
 autoencoder = Model(input=input_img, output=decoded)
@@ -28,10 +28,10 @@ decoder_layer = autoencoder.layers[-1]
 # create the decoder model
 decoder = Model(input=encoded_input, output=decoder_layer(encoded_input))
 
-autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
-x_train = (x_train.astype('float32')+1)/2.0
-x_test = (x_test.astype('float32')+1)/2.0
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
 print x_train.shape
 print x_test.shape
 
