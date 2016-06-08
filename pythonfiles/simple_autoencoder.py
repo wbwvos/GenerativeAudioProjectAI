@@ -16,10 +16,10 @@ encoded = Dense(encoding_dim, activation='tanh')(input)
 decoded = Dense(sr, activation='tanh')(encoded)
 
 # this model maps an input to its reconstruction
-autoencoder = Model(input=input_img, output=decoded)
+autoencoder = Model(input=input, output=decoded)
 
 # this model maps an input to its encoded representation
-encoder = Model(input=input_img, output=encoded)
+encoder = Model(input=input, output=encoded)
 
 # create a placeholder for an encoded (32-dimensional) input
 encoded_input = Input(shape=(encoding_dim,))
