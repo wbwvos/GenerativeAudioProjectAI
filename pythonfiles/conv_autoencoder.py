@@ -4,6 +4,8 @@ import openWav
 
 x_train, x_test, sr = openWav.loadData()
 
+print(x_train.shape)
+print(x_test.shape)
 input_sample = Input(shape=(1, sr))
 
 x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)

@@ -3,7 +3,7 @@ from keras.models import Model
 import numpy as np
 import openWav 
 
-x_test, x_train, sr = openWav.loadData()
+x_train, x_test, sr = openWav.loadData()
 
 # this is the size of our encoded representations
 encoding_dim = 128  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats

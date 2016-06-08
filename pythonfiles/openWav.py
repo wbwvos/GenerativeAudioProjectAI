@@ -21,9 +21,7 @@ def loadData():
     X = np.reshape(y, (totalSamples, sr))
     X_test = X[B,:]
     X_train = np.delete(X, B, axis=0)
-    print(X_test.shape)
-    print(X_train.shape)
     
-    return X_test, X_train, sr
+    return X_train, X_test, sr
   
 
