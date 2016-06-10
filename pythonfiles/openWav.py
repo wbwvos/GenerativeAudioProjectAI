@@ -15,8 +15,8 @@ def loadData():
     trainPercentage = 0.90
     testSamples = testPercentage * totalSamples
     trainSamples = trainPercentage * totalSamples
-    sr = 1764
-    y, sr = librosa.load(audiofile) #, sr=sr)
+    sr = 2048
+    y, sr = librosa.load(audiofile, sr=sr)
     B = random.sample(range(totalSamples), int(testSamples))
     X = np.reshape(y, (totalSamples, sr))
     X_test = X[B,:]
