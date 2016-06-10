@@ -2,6 +2,7 @@ from keras.layers import Input, Dense, Convolution1D, AveragePooling1D, UpSampli
 from keras.models import Model
 import openWav
 import numpy as np
+import pickle
 
 x_train, x_test, sr = openWav.loadData()
 
@@ -14,11 +15,11 @@ input_sample = Input(shape=(1, sr))
 
 x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
 x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
+x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
 x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-x = Convolution1D(32, 16, border_mode='same', activation="tanh")(input_sample)
+x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
 x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-x = Convolution1D(1, 8, border_mode='same', activation="tanh")(input_sample)
+x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
 encoded = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
 
 x = UpSampling1D(length=2)(encoded)
@@ -34,10 +35,11 @@ autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
 autoencoder.fit(x_train, x_train,
                 nb_epoch=50,
-                batch_size=32,
+                batch_size=10,
                 shuffle=True,
                 validation_data=(x_test, x_test))
                 
 decoded_samples = autoencoder.predict(x_test)
 
-print decoded_samples[1]
+pickle.dump(open('conv_x_test.p', 'rb'))
+pickle.dump(open('conv_decoded.p', 'rb'))
