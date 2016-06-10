@@ -36,11 +36,12 @@ x_test = x_test.astype('float32')
 print x_train.shape
 print x_test.shape
 
-autoencoder.fit(x_train, x_train,
-                nb_epoch=50,
-                batch_size=10,
-                shuffle=True,
-                validation_data=(x_test, x_test))
+if train:
+    print("fitting")
+    autoencoder.fit(x_train, x_train,nb_epoch=50, batch_size=10, shuffle=True, validation_data=(x_test, x_test))
+    model.save_weights("weights_1.dat", True)
+
+model.load_weights("weights_1.dat")
                 
 # encode and decode some digits
 # note that we take them from the *test* set
