@@ -2,6 +2,7 @@ from keras.layers import Input, Dense
 from keras.models import Model
 import numpy as np
 import openWav 
+import pickle
 
 x_train, x_test, sr = openWav.loadData()
 
@@ -46,23 +47,8 @@ autoencoder.fit(x_train, x_train,
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
 
-# use Matplotlib (don't ask)
-#import matplotlib.pyplot as plt
+pickle.dump(encoded_imgs, open( "x_test.p", "wb" ))
+pickle.dump(decoded_imgs, open( "decoded_imgs.p", "wb" ))
 
-#n = 10  # how many digits we will display
-#plt.figure(figsize=(20, 4))
-#for i in range(n):
-#    # display original
-#    ax = plt.subplot(2, n, i)
-#    plt.imshow(x_test[i].reshape(210, 210))
-#    plt.gray()
-#    ax.get_xaxis().set_visible(False)
-#    ax.get_yaxis().set_visible(False)
-#
-#    # display reconstruction
-#    ax = plt.subplot(2, n, i + n)
-#    plt.imshow(decoded_imgs[i].reshape(210, 210))
-#    plt.gray()
-#    ax.get_xaxis().set_visible(False)
-#    ax.get_yaxis().set_visible(False)
-#plt.show()
+
+
