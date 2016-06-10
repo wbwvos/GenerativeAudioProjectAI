@@ -7,7 +7,7 @@ import pickle
 x_train, x_test, sr = openWav.loadData()
 
 # this is the size of our encoded representations
-encoding_dim = 128  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+encoding_dim = 1024  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
 
 # this is our input placeholder
 input = Input(shape=(sr,))
