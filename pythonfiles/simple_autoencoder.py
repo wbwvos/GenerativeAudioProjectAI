@@ -47,7 +47,7 @@ autoencoder.fit(x_train, x_train,
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
 
-pickle.dump(encoded_imgs, open( "x_test.p", "wb" ))
+pickle.dump(x_test, open( "x_test.p", "wb" ))
 pickle.dump(decoded_imgs, open( "decoded_imgs.p", "wb" ))
 
 
