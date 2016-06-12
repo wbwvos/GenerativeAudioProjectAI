@@ -8,10 +8,11 @@ from keras.layers import Input, Dense, Lambda
 from keras.models import Model
 from keras import backend as K
 from keras import objectives
+import openWav
 
-x_train, x_test, sr = loadData()
+x_train, x_test, sr = openWav.loadData()
 
-batch_size = 16
+batch_size = 10
 original_dim = sr
 latent_dim = 2
 intermediate_dim = 128
@@ -45,13 +46,13 @@ def vae_loss(x, x_decoded_mean):
     return xent_loss + kl_loss
 
 vae = Model(x, x_decoded_mean)
-vae.compile(optimizer='rmsprop', loss=vae_loss)
+vae.compile(optimizer='adadelta', loss=vae_loss)
 
 # train the VAE on MNIST digits
 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-x_train = np.resize(x_train, (x_train.shape[0], sr, 1)).astype(np.float32)
-x_test = np.resize(x_test, (x_test.shape[0], sr, 1)).astype(np.float32)
+x_train = np.resize(x_train, (x_train.shape[0], sr)).astype(np.float32)
+x_test = np.resize(x_test, (x_test.shape[0], sr)).astype(np.float32)
 
 vae.fit(x_train, x_train,
         shuffle=True,
@@ -63,7 +64,11 @@ vae.fit(x_train, x_train,
 encoder = Model(x, z_mean)
 
 # display a 2D plot of the digit classes in the latent space
-#x_test_encoded = encoder.predict(x_test, batch_size=batch_size)
+x_test_encoded = encoder.predict(x_test, batch_size=batch_size)
+#import pickle
+#pickle.dump( , open( "save.p", "wb" ) )
+
+
 
 # build a digit generator that can sample from the learned distribution
 #decoder_input = Input(shape=(latent_dim,))
@@ -73,8 +78,4 @@ encoder = Model(x, z_mean)
 
 
 #z_sample = np.array([[xi, yi]]) * epsilon_std
-#x_decoded = generator.predict(z_sample)
-	   
-	   
-	   
-	   
+#x_decoded = generator.predict(z_sample)	   
