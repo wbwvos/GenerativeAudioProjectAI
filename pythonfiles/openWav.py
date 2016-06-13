@@ -38,7 +38,8 @@ def lstmData():
     X = np.reshape(y, (totalSamples, sr))
     test = X[trainSamples:,:]
     train = X[:trainSamples,:]
-
+    test = test[:-1,:]
+    train = train[:-1,:]
     seed = np.zeros(train[0].shape)
     
     x_train = np.vstack((seed, train))
@@ -47,4 +48,10 @@ def lstmData():
     x_test = np.vstack((seed, test))
     y_test =  np.vstack((test, seed))    
     
+    x_train = np.resize(x_train, (x_train.shape[0], sr, 1)).astype(np.float32)
+    y_train = np.resize(y_train, (y_train.shape[0], sr, 1)).astype(np.float32)
+    #x_test = np.resize(x_test, (x_test.shape[0], sr, 1)).astype(np.float32)
+    #y_test = np.resize(y_test, (y_test.shape[0], sr, 1)).astype(np.float32)
+    
+ 
     return x_train, y_train, x_test, y_test, sr

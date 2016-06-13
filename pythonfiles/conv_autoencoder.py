@@ -38,8 +38,19 @@ x = UpSampling1D(length=2)(x)
 decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
 
 autoencoder = Model(input_sample, decoded)
-autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
 
+encoder = Model(input=input_sample, output=encoded)
+# create a placeholder for an encoded (32-dimensional) input
+encoded_input = Input(shape=(128,))
+# retrieve the last layer of the autoencoder model
+decoder_layer = autoencoder.layers[-1]
+# create the decoder model
+decoder = Model(input=encoded_input, output=decoder_layer(encoded_input))
+#encoded_input = Input(shape=(128,))
+#decoder = Model(input=encoded_input, output=decoded(encoded_input))
+
+autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
+print autoencoder.summary()
 if train:
     print 'Training the model...'
     trainStart = time.time()
