@@ -46,7 +46,7 @@ def ConvEncoder(input_sample, train, x_train, x_test):
         
     Model.load_weights("weights_1.dat")
 
-    return encoder, decoder;            
+    return encoder, decoder            
 #decoded_samples = autoencoder.predict(x_test)
 
 #pickle.dump(open('conv_x_test.p', 'rb'))
