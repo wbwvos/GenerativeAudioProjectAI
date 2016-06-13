@@ -14,6 +14,8 @@ x_test = np.resize(x_test, (x_test.shape[0], sr, 1)).astype(np.float32)
 input_sample = Input(shape=(1, sr))
 
 def ConvEncoder(input_sample, train, x_train, x_test):
+    
+    
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
     x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
@@ -42,7 +44,9 @@ def ConvEncoder(input_sample, train, x_train, x_test):
         autoencoder.fit(x_train, x_train, nb_epoch=50,batch_size=10,shuffle=True,validation_data=(x_test, x_test))
         Model.save_weights("weights_1.dat", True)
         
-    Model.load_weights("weights_1.dat")            
+    Model.load_weights("weights_1.dat")
+
+    return encoder, decoder;            
 #decoded_samples = autoencoder.predict(x_test)
 
 #pickle.dump(open('conv_x_test.p', 'rb'))
