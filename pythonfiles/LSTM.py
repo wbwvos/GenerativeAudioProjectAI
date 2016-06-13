@@ -1,6 +1,9 @@
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 import numpy as np
+import openWav
+
+x_train, y_train, x_test, y_test, sr = openWav.lstmData()
 
 def train(x_train, y_train, x_test, y_test):
     # expected input data shape: (batch_size, timesteps, data_dim)
