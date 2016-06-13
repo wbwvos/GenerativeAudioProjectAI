@@ -41,10 +41,10 @@ def lstmData():
 
     seed = np.zeros(train[0].shape)
     
-    x_train = np.vstack(seed, train)
-    y_train =  np.vstack(train, seed)
+    x_train = np.vstack((seed, train))
+    y_train =  np.vstack((train, seed))
     
-    x_test = np.vstack(seed, test)
-    y_test =  np.vstack(test, seed)    
+    x_test = np.vstack((seed, test))
+    y_test =  np.vstack((test, seed))    
     
     return x_train, y_train, x_test, y_test, sr

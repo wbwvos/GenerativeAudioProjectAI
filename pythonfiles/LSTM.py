@@ -9,7 +9,7 @@ def train(x_train, y_train, x_test, y_test):
     
     
     model = Sequential()
-    model.add(LSTM(data_dim, return_sequences=False,
+    model.add(LSTM(data_dim, return_sequences=False, stateful=True,
                    input_shape=(timesteps, data_dim)))  # returns a sequence of vectors of dimension 32
     model.compile(loss='mean_squared_error', optimizer=SGD(lr=0.01, momentum=0.9))
     
