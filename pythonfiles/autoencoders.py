@@ -28,11 +28,12 @@ def getConvAutoEncoderModel(input_length, x_train, x_test):
     decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
     
     encoder = Model(input=input_sample, output=encoded)
-    decoder = Model(input=encoded, output=decoded)
+    encoded_input = Input(shape=(encoded.output_shape))
+    decoder = Model(input=encoded, output=decoded(encoded_input))
     autoencoder = Model(input_sample, decoded)
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
-    
+    print autoencoder.summary()
     weights_filename = 'weights_conv.dat'
     if os.path.isfile(weights_filename):
         print 'Loading the model...'
@@ -74,7 +75,7 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
     decoder = Model(input=encoded_input, output=decoder_layer(encoded_input))
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
-    
+    print autoencoder.summary()
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')
 
