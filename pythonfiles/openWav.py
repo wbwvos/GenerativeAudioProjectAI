@@ -48,3 +48,31 @@ def lstmData():
     y_test =  np.vstack((test, seed))    
     
     return x_train, y_train, x_test, y_test, sr
+
+def lstmDataStream():
+    audiofile = '../data/toy_data_sines_44_1khz.wav'
+    totalSamples = 1000
+    testPercentage = 0.10
+    trainPercentage = 0.90
+    testSamples = testPercentage * totalSamples
+    sr = 2048
+    trainSamples = trainPercentage * totalSamples*sr
+    y, sr = librosa.load(audiofile, sr=sr)
+    print(y.shape)
+    test = y[trainSamples:]
+    train = y[:trainSamples]
+
+    seed = np.zeros(train[0].shape)
+    
+    x_train = np.append(seed, train[:-1,])
+    y_train = train
+    
+    x_test = np.append(seed, test[:-1,])
+    y_test = test   
+    print(x_train.shape)
+    print(y_train.shape)
+    print(x_test.shape)
+    print(y_test.shape)
+    return x_train, y_train, x_test, y_test, sr
+    
+lstmDataStream()
