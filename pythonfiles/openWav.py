@@ -63,9 +63,9 @@ def lstmDataStream():
     trainPercentage = 0.90
     testSamples = testPercentage * totalSamples
     sr = 2048
-    trainSamples = trainPercentage * totalSamples*sr
+    trainSamples = int(trainPercentage * totalSamples*sr)
     y, sr = librosa.load(audiofile, sr=sr)
-    print(y.shape)
+    #print(y.shape)
     test = y[trainSamples:]
     train = y[:trainSamples]
 
@@ -76,30 +76,29 @@ def lstmDataStream():
     
     x_test = np.append(seed, test[:-1,])
     y_test = test   
-    print(x_train.shape)
-    print(y_train.shape)
-    print(x_test.shape)
-    print(y_test.shape)
+#    print(x_train.shape)
+#    print(y_train.shape)
+#    print(x_test.shape)
+#    print(y_test.shape)
     return x_train, y_train, x_test, y_test, sr
     
-def sequenceData():
+def sequenceData(sr = 2048, xsize = 128, ysize = 1):
     audiofile = '../data/toy_data_sines_44_1khz.wav'
-    sr = 2048
     y, sr = librosa.load(audiofile, sr=sr)
     x_train = []
     y_train = []
-    print(y.shape)
-    for i in range(0, len(y)-128):
-        x_train.append(y[i:i+127])
-        y_train.append(y[i+128])
+
+    for i in range(0, len(y)-xsize-ysize):
+        x_train.append(y[i:i+xsize])
+        y_train.append(y[i+xsize:i+xsize+ysize])
     x_train = np.array(x_train)
     y_train = np.array(y_train)
     
-    x_test = x_train[-127992:-1]
-    y_test = y_train[-127992:-1]
+    x_test = x_train[-127992:]
+    y_test = y_train[-127992:]
     
     x_train = x_train[:1919880]
     y_train = y_train[:1919880]  
     
     return x_train, y_train, x_test, y_test, sr
-sequenceData()
+x_train, y_train, x_test, y_test, sr = lstmDataStream()
