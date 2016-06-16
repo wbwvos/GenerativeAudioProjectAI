@@ -76,10 +76,10 @@ def lstmDataStream():
     
     x_test = np.append(seed, test[:-1,])
     y_test = test   
-#    print(x_train.shape)
-#    print(y_train.shape)
-#    print(x_test.shape)
-#    print(y_test.shape)
+    x_train = np.resize(x_train, (x_train.shape[0], 1, 1)).astype(np.float32)
+    y_train = np.resize(y_train, (y_train.shape[0], 1, 1)).astype(np.float32)
+    x_test = np.resize(x_test, (x_test.shape[0], 1, 1)).astype(np.float32)
+    y_test = np.resize(y_test, (y_test.shape[0], 1, 1)).astype(np.float32)
     return x_train, y_train, x_test, y_test, sr
     
 def sequenceData(sr = 2048, xsize = 128, ysize = 1):
