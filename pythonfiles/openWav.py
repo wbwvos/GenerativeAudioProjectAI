@@ -82,4 +82,24 @@ def lstmDataStream():
     print(y_test.shape)
     return x_train, y_train, x_test, y_test, sr
     
-lstmDataStream()
+def sequenceData():
+    audiofile = '../data/toy_data_sines_44_1khz.wav'
+    sr = 2048
+    y, sr = librosa.load(audiofile, sr=sr)
+    x_train = []
+    y_train = []
+    print(y.shape)
+    for i in range(0, len(y)-128):
+        x_train.append(y[i:i+127])
+        y_train.append(y[i+128])
+    x_train = np.array(x_train)
+    y_train = np.array(y_train)
+    
+    x_test = x_train[-127992:-1]
+    y_test = y_train[-127992:-1]
+    
+    x_train = x_train[:1919880]
+    y_train = y_train[:1919880]  
+    
+    return x_train, y_train, x_test, y_test, sr
+sequenceData()
