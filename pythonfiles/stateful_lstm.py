@@ -16,10 +16,11 @@ batch_size = 80
 epochs = 5
 # number of elements ahead that are used to make the prediction
 lahead = 1
-audiodir = '../data/drums/'
-audiofile = '128bpm hip1.wav'
-x_train, y_train, x_test, y_test, sr = openWav.lstmDataStream(audiodir + audiofile)
 
+x_train, y_train = openWav.loadDrums(batch_size)
+x_train = x_train[0]
+y_train = y_train[0]
+print(x_train.shape)
 #def gen_cosine_amp(amp=100, period=25, x0=0, xn=50000, step=1, k=0.0001):
 #    """Generates an absolute cosine time series with the amplitude
 #    exponentially decreasing
@@ -85,15 +86,14 @@ else:
     print('Saving the model...')
     model.save_weights(weights_filename, True)
 
-print(x_test.shape)
 print('Predicting')
 predicted_output = model.predict(x_train, batch_size=batch_size)
 
 import pickle 
 expected_output = y_train
-pickle.dump(predicted_output, open('predicted_' + audiofile + '.p','wb'))
+pickle.dump(predicted_output, open('predicted.p','wb'))
 print('Saved predicted_output to predicted.p')
-pickle.dump(expected_output, open('expected_' + audiofile + '.p','wb'))
+pickle.dump(expected_output, open('expected.p','wb'))
 print('Saved expected_output to expected.p')
 #
 #print('Ploting Results')
