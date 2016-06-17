@@ -5,8 +5,8 @@ import librosa
 #import matplotlib.pyplot as plt
 #import numpy as np
 import random
-
-
+import sys
+import os.path
 
 def loadData():
     audiofile = '../data/toy_data_sines_44_1khz.wav'
@@ -102,3 +102,35 @@ def sequenceData(sr = 2048, xsize = 128, ysize = 1):
     
     return x_train, y_train, x_test, y_test, sr
 #x_train, y_train, x_test, y_test, sr = lstmDataStream()
+    
+def loadDrums(batchsize):
+    from os import listdir
+    rootdir = '../data/drums/'
+    #os.path.abspath(
+    
+    audiofiles = [];
+    trainSamples = 14
+    testSamples = 2
+    sr = 2048
+    
+    for i, file in enumerate(listdir(rootdir)):
+        y, sr = librosa.load(rootdir+file, sr=sr)
+        audiofiles.append(y)
+
+    test = audiofiles[trainSamples:]
+    train = audiofiles[:trainSamples]
+    
+    seed = np.zeros(batchsize)
+    for example in x_train
+    x_train = np.append(seed, train[0])
+    #y_train = train
+#    
+#    x_test = np.append(seed, test[:-1,])
+#    y_test = test   
+#    x_train = np.resize(x_train, (x_train.shape[0], 1, 1)).astype(np.float32)
+#    #y_train = np.resize(y_train, (y_train.shape[0], 1, 1)).astype(np.float32)
+#    x_test = np.resize(x_test, (x_test.shape[0], 1, 1)).astype(np.float32)
+#    #y_test = np.resize(y_test, (y_test.shape[0], 1, 1)).astype(np.float32)
+#    return x_train, y_train, x_test, y_test, sr
+    
+loadDrums(20)
