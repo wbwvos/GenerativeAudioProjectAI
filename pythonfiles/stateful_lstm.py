@@ -13,7 +13,7 @@ import os.path
 # since we are using stateful rnn tsteps can be set to 1
 tsteps = 1
 batch_size = 80
-epochs = 10
+epochs = 5
 # number of elements ahead that are used to make the prediction
 lahead = 1
 audiodir = '../data/drums/'
@@ -72,7 +72,7 @@ else:
     print('Training the model...')
     trainStart = time.time()
     for i in range(epochs):
-        print('Epoch', i, '/', epochs)
+        print('Epoch', i+1, '/', epochs)
         model.fit(x_train,
                   y_train,
                   batch_size=batch_size,
@@ -85,11 +85,12 @@ else:
     print('Saving the model...')
     model.save_weights(weights_filename, True)
 
+print(x_test.shape)
 print('Predicting')
-predicted_output = model.predict(x_test, batch_size=batch_size)
+predicted_output = model.predict(x_train, batch_size=batch_size)
 
 import pickle 
-expected_output = y_test
+expected_output = y_train
 pickle.dump(predicted_output, open('predicted_' + audiofile + '.p','wb'))
 print('Saved predicted_output to predicted.p')
 pickle.dump(expected_output, open('expected_' + audiofile + '.p','wb'))

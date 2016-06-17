@@ -61,7 +61,7 @@ def lstmDataStream(audiofile = '../data/toy_data_sines_44_1khz.wav'):
     testPercentage = 0.10
     trainPercentage = 0.90
     testSamples = testPercentage * totalSamples
-    sr = 2048
+    sr = 2048*4
     trainSamples = int(trainPercentage * totalSamples*sr)
     y, sr = librosa.load(audiofile, sr=sr)
     #print(y.shape)
@@ -130,3 +130,4 @@ def loadDrums(batchsize):
         y_train.append(trainexampleY)
     
     return x_train, y_train
+
