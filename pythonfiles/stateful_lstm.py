@@ -87,14 +87,19 @@ else:
     model.save_weights(weights_filename, True)
 
 print('Predicting')
-predicted_output = model.predict(x_train, batch_size=batch_size)
+prime = x_train[0:20000]
+current = prime[0:batch_size]
+#for i in range(len(prime) - batch_size):
+predicted_output = model.predict(current, batch_size=batch_size)
+print(predicted_output.shape)
+print(predicted_output)
 
-import pickle 
-expected_output = y_train
-pickle.dump(predicted_output, open('predicted.p','wb'))
-print('Saved predicted_output to predicted.p')
-pickle.dump(expected_output, open('expected.p','wb'))
-print('Saved expected_output to expected.p')
+#import pickle 
+#expected_output = y_train
+#pickle.dump(predicted_output, open('predicted.p','wb'))
+#print('Saved predicted_output to predicted.p')
+#pickle.dump(expected_output, open('expected.p','wb'))
+#print('Saved expected_output to expected.p')
 #
 #print('Ploting Results')
 #plt.subplot(2, 1, 1)
