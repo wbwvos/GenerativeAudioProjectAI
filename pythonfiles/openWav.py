@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import numpy as np
 import librosa
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 #import numpy as np
 import random
 import sys
@@ -117,19 +117,16 @@ def loadDrums(batchsize):
         audiofiles.append(y)
 
     test = audiofiles[trainSamples:]
-    train = audiofiles[:trainSamples]
-    
+    train = audiofiles
+    x_train = []
+    y_train = []
     seed = np.zeros(batchsize)
-    for example in x_train
-    x_train = np.append(seed, train[0])
-    #y_train = train
-#    
-#    x_test = np.append(seed, test[:-1,])
-#    y_test = test   
-#    x_train = np.resize(x_train, (x_train.shape[0], 1, 1)).astype(np.float32)
-#    #y_train = np.resize(y_train, (y_train.shape[0], 1, 1)).astype(np.float32)
-#    x_test = np.resize(x_test, (x_test.shape[0], 1, 1)).astype(np.float32)
-#    #y_test = np.resize(y_test, (y_test.shape[0], 1, 1)).astype(np.float32)
-#    return x_train, y_train, x_test, y_test, sr
+    for i in range(0, len(train)): 
+        trainexample = np.append(seed, train[i])
+        trainexample = trainexample[:-batchsize]
+        trainexample = np.resize(trainexample, (trainexample.shape[0], 1, 1)).astype(np.float32)
+        x_train.append(trainexample)
+        trainexampleY = np.resize(train[i], (train[i].shape[0], 1)).astype(np.float32)
+        y_train.append(trainexampleY)
     
-loadDrums(20)
+    return x_train, y_train
