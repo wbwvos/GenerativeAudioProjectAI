@@ -102,21 +102,18 @@ def sequenceData(sr = 2048, xsize = 128, ysize = 1):
     return x_train, y_train, x_test, y_test, sr
 #x_train, y_train, x_test, y_test, sr = lstmDataStream()
     
-def loadDrums(batchsize):
+def loadDrums(batchsize, sr = 2048):
     from os import listdir
     rootdir = '../data/drums/'
     #os.path.abspath(
     
     audiofiles = [];
-    trainSamples = 14
-    testSamples = 2
-    sr = 2048
+    
     
     for i, file in enumerate(listdir(rootdir)):
         y, sr = librosa.load(rootdir+file, sr=sr)
         audiofiles.append(y)
 
-    test = audiofiles[trainSamples:]
     train = audiofiles
     x_train = []
     y_train = []
@@ -128,6 +125,5 @@ def loadDrums(batchsize):
         x_train.append(trainexample)
         trainexampleY = np.resize(train[i], (train[i].shape[0], 1)).astype(np.float32)
         y_train.append(trainexampleY)
-    
+        
     return x_train, y_train
-
