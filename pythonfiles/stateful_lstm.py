@@ -17,7 +17,7 @@ epochs = 5
 # number of elements ahead that are used to make the prediction
 lahead = 1
 
-x_train, y_train = openWav.loadDrums(batch_size)
+x_train, y_train = openWav.loadDrums(batch_size, 8192)
 x_train = x_train[0]
 y_train = y_train[0]
 print(x_train.shape)
