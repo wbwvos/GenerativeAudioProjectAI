@@ -56,8 +56,7 @@ def lstmData():
  
     return x_train, y_train, x_test, y_test, sr
 
-def lstmDataStream():
-    audiofile = '../data/toy_data_sines_44_1khz.wav'
+def lstmDataStream(audiofile = '../data/toy_data_sines_44_1khz.wav'):
     totalSamples = 1000
     testPercentage = 0.10
     trainPercentage = 0.90
