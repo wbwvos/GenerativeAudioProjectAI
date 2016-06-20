@@ -132,16 +132,16 @@ def loadDrums(batchsize, sr = 2048):
 def loadDrums2(timesteps, sr = 2048):
     from os import listdir
     rootdir = '../data/drums/'
-    os.path.abspath(
+   
     
-    audiofiles = [];
-    
+    audiofiles = []
+    #audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]
     
     for i, file in enumerate(listdir(rootdir)):
         y, sr = librosa.load(rootdir+file, sr=sr)
         audiofiles.append(y)
     
-    #audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]    
+        
     
     #train = audiofiles
     x_train = []
@@ -153,16 +153,16 @@ def loadDrums2(timesteps, sr = 2048):
     for i in range(0, len(audiofiles)):
         for j in range(0, xy_dim):
             if(j == xy_dim-1): 
-                exampleY = audiofiles[i][j:(len(audiofiles[i])-xy_dim)+j]
+                exampleY = audiofiles[i][j:(len(audiofiles[i])-timesteps)+j]
             else:
-                trainexample.append( audiofiles[i][j:(len(audiofiles[i])-xy_dim)+j])
+                trainexample.append( audiofiles[i][j:(len(audiofiles[i])-timesteps)+j])
             
         x_train.append(trainexample)
         y_train.append(exampleY)
         trainexample = []
         exampleY = []
-    print(x_train)
-    print(y_train)
+    #print(x_train)
+    #print(y_train)
     return x_train, y_train
-    
-#loadDrums2(4)
+
+loadDrums2(4)    
