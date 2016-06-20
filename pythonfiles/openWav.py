@@ -135,11 +135,11 @@ def loadDrums2(timesteps, sr = 2048):
    
     
     #audiofiles = []
-    #audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]
+    audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]
     
-    for i, file in enumerate(listdir(rootdir)):
-        y, sr = librosa.load(rootdir+file, sr=sr)
-        audiofiles.append(y)
+    #for i, file in enumerate(listdir(rootdir)):
+    #    y, sr = librosa.load(rootdir+file, sr=sr)
+    #    audiofiles.append(y)
     
         
     
@@ -159,7 +159,7 @@ def loadDrums2(timesteps, sr = 2048):
         trainexample = np.array(trainexample)
         trainexample = np.resize(trainexample, (trainexample.shape[0], trainexample.shape[1],1)).astype(np.float32)
         exampleY = np.array(exampleY)
-        exampleY = np.resize(exampleY, (trainexample.shape[0],1)).astype(np.float32)
+        exampleY = np.resize(exampleY, (exampleY.shape[0],1)).astype(np.float32)
         x_train.append(np.swapaxes(trainexample, 0,1))
         y_train.append(exampleY)
         trainexample = []
