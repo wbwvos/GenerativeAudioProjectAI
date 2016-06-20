@@ -16,8 +16,8 @@ batch_size = 80
 epochs = 5
 # number of elements ahead that are used to make the prediction
 lahead = 1
-
-x_train, y_train = openWav.loadDrums(batch_size, 8192)
+sr = 8192
+x_train, y_train = openWav.loadDrums(batch_size, sr)
 x_train = x_train[0]
 y_train = y_train[0]
 print(x_train.shape)
@@ -87,19 +87,30 @@ else:
     model.save_weights(weights_filename, True)
 
 print('Predicting')
-prime = x_train[0:20000]
-current = prime[0:batch_size]
+prime = x_train[8000:8000*2]
+generations = 8000*5
 #for i in range(len(prime) - batch_size):
-predicted_output = model.predict(current, batch_size=batch_size)
-print(predicted_output.shape)
+predicted_output = model.predict(prime, batch_size=batch_size)
 print(predicted_output)
+print(len(predicted_output))
+total = predicted_output
+for i in range(generations):
+    last_batch = total[-batch_size:]
+    predicted_output_batch = model.predict(np.reshape(last_batch, (last_batch.shape[0], 1, 1)),batch_size=80)
+    predicted_value = predicted_output_batch[-1]
+    total = np.append(total, predicted_value)
 
-#import pickle 
-#expected_output = y_train
-#pickle.dump(predicted_output, open('predicted.p','wb'))
-#print('Saved predicted_output to predicted.p')
-#pickle.dump(expected_output, open('expected.p','wb'))
-#print('Saved expected_output to expected.p')
+
+
+import pickle 
+expected_output = y_train
+pickle.dump(predicted_output, open('predicted.p','wb'))
+print('Saved predicted_output to predicted.p')
+pickle.dump(prime, open('expected.p','wb'))
+print('Saved expected_output to expected.p')
+pickle.dump(total, open('generated.p','wb'))
+print('Saved generated_output to generated.p')
+
 #
 #print('Ploting Results')
 #plt.subplot(2, 1, 1)

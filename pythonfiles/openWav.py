@@ -119,8 +119,9 @@ def loadDrums(batchsize, sr = 2048):
     y_train = []
     seed = np.zeros(batchsize)
     for i in range(0, len(train)): 
-        trainexample = np.append(seed, train[i])
-        trainexample = trainexample[:-batchsize]
+        #trainexample = np.append(seed, train[i])
+        #trainexample = trainexample[:-batchsize]
+        trainexample = train[i]
         trainexample = np.resize(trainexample, (trainexample.shape[0], 1, 1)).astype(np.float32)
         x_train.append(trainexample)
         trainexampleY = np.resize(train[i], (train[i].shape[0], 1)).astype(np.float32)
