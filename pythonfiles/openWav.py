@@ -134,7 +134,7 @@ def loadDrums2(timesteps, sr = 2048):
     rootdir = '../data/drums/'
    
     
-    audiofiles = []
+    #audiofiles = []
     #audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]
     
     for i, file in enumerate(listdir(rootdir)):
@@ -156,13 +156,17 @@ def loadDrums2(timesteps, sr = 2048):
                 exampleY = audiofiles[i][j:(len(audiofiles[i])-timesteps)+j]
             else:
                 trainexample.append( audiofiles[i][j:(len(audiofiles[i])-timesteps)+j])
-            
-        x_train.append(trainexample)
+        trainexample = np.array(trainexample)
+        trainexample = np.resize(trainexample, (trainexample.shape[0], trainexample.shape[1],1)).astype(np.float32)
+        exampleY = np.array(exampleY)
+        exampleY = np.resize(exampleY, (trainexample.shape[0],1)).astype(np.float32)
+        x_train.append(np.swapaxes(trainexample, 0,1))
         y_train.append(exampleY)
         trainexample = []
         exampleY = []
-    #print(x_train)
-    #print(y_train)
+    x_train = np.array(x_train)
+    y_train = np.array(y_train)
+    print(x_train.shape)
+    print(y_train.shape)
     return x_train, y_train
-
-loadDrums2(4)    
+    
