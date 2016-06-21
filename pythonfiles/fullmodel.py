@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, Convolution1D, AveragePooling1D, TimeDistributed
 import openWav
 import time
 import os.path
@@ -25,7 +25,6 @@ print(x_train.shape)
 
 print('Creating Model')
 model = Sequential()
-model.add()
 
 model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh", input_shape=(batch_size, tsteps, 1))))
 model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
