@@ -17,7 +17,7 @@ def getConvAutoEncoderModel(input_length, x_train, x_test):
     x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
     encoded = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    
+    #output = 128,1
     x = UpSampling1D(length=2)(encoded)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
     x = UpSampling1D(length=2)(x)
@@ -101,8 +101,30 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
         autoencoder.save_weights(weights_filename, True)
     return encoder, decoder
 
-def getEncoder():
-    
+def getEncoder(input_length):
+    input_sample = Input(shape=(input_length, 1))
+    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
+    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
+    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
+    encoded = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    encoder = Model(input_sample, encoded)
+    encoder.summary()
+    return encoder
 
-def getDecoder():
-
+def getDecoder(encoded_length):
+    encoded = Input(shape=(encoded_length, 1))
+    x = UpSampling1D(length=2)(encoded)
+    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = UpSampling1D(length=2)(x)
+    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = UpSampling1D(length=2)(x)
+    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = UpSampling1D(length=2)(x)
+    decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
+    decoder = Model(encoded, decoded)
+    decoder.summary()
+    return decoder
