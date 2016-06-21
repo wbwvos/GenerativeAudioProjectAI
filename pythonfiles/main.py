@@ -5,13 +5,13 @@ import openWav
 def main():
     #if switch == 1:
     x_train, x_test, sr = openWav.loadData()
-    encoder, decoder = ae.getSimpleAutoEncoderModel(sr, x_train, x_test)
+    encoder, decoder = ae.getConvAutoEncoderModel(sr, x_train, x_test)
     print(encoder)
     print(decoder)
     #else: 
     #    if switch == 2:
-    x_train, y_train, x_test, y_test, sr = openWav.lstmData()
-    lstmModel = trainLSTM(x_train, y_train, x_test, y_test, encoder)
+    #x_train, y_train, x_test, y_test, sr = openWav.lstmData()
+    #lstmModel = trainLSTM(x_train, y_train, x_test, y_test, encoder)
     #    else: 
     #        if switch == 3:
     #lsmtModel.predict(seed)  

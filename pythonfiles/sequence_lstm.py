@@ -11,7 +11,7 @@ import time
 import os.path
 
 # since we are using stateful rnn tsteps can be set to 1
-tsteps = 64
+tsteps = 64*4
 batch_size = tsteps
 epochs = 5
 # number of elements ahead that are used to make the prediction
@@ -60,9 +60,9 @@ else:
 
 
 print('Predicting')
-prime = x_train[:batch_size*100]
+prime = x_train[:batch_size*batch_size]
 print('prime shape:', prime.shape)
-generations = batch_size*10
+generations = batch_size*5
 print('Predicting prime')
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 #print(predicted_output.shape)
@@ -79,7 +79,8 @@ for i in range(generations):
     predicted_value = predicted_output_batch[-1]
     total = np.append(total, predicted_value)
     if i % 64 == 0:
-        print(i, 'predicted:' ,predicted_value)
+        print(i, 'predicted:', predicted_value)
+    #model.reset_states()
     #print(total[-10:])
      
 
