@@ -17,6 +17,7 @@ epochs = 5
 # number of elements ahead that are used to make the prediction
 lahead = 1
 sr = 2048
+outputsize = 1
 x_train, y_train = openWav.loadDrums2(tsteps, sr)
 x_train = x_train[0]
 y_train = y_train[0]
