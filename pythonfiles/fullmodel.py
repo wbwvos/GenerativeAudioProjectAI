@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Convolution1D, AveragePooling1D, TimeDistributed
+from keras.layers import Dense, LSTM, Convolution1D, AveragePooling1D, TimeDistributed, Flatten
 import openWav
 import time
 import os.path
@@ -19,34 +19,29 @@ lahead = 1
 sr = 2048
 outputsize = 1
 x_train, y_train = openWav.loadDrums2(tsteps, sr)
-x_train = x_train[0]
+#x_train = x_train[0]
 y_train = y_train[0]
 print(x_train.shape)
 
 print('Creating Model')
 model = Sequential()
 
-model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh"), batch_input_shape=(batch_size, tsteps, 1)))
+model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh"), input_shape=(batch_size, tsteps, 1)))
 model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
 model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh")))
 model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
 model.add(TimeDistributed(Convolution1D(32, 16, border_mode='same', activation="tanh")))
 model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
-model.add(TimeDistributed(Convolution1D(8, 8, border_mode='same', activation="tanh")))
+model.add(TimeDistributed(Convolution1D(8, 1, border_mode='same', activation="tanh")))
 model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
+model.add(TimeDistributed(Flatten()))
 
-model.add(LSTM(50,
-               batch_input_shape=(batch_size, tsteps, 8),
-               return_sequences=True,
-               stateful=True))
-model.add(LSTM(50,
-               batch_input_shape=(batch_size, tsteps, 8),
-               return_sequences=False,
-               stateful=True))
+model.add(LSTM(50))
 model.add(Dense(outputsize))
-model.compile(loss='mse', optimizer='rmsprop')
 
-weights_filename = 'weights_sequence_lstm.dat'
+model.compile(loss='mse', optimizer='rmsprop')
+model.summary()
+weights_filename = 'weights_fullmodel.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)

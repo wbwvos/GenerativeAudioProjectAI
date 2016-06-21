@@ -3,11 +3,11 @@ from keras.models import Model
 import numpy as np
 import time
 import os.path
+import openWav
 
-def getConvAutoEncoderModel(input_length, x_train, x_test):
-    x_train = np.resize(x_train, (x_train.shape[0], input_length, 1)).astype(np.float32)
-    x_test = np.resize(x_test, (x_test.shape[0], input_length, 1)).astype(np.float32)
-    
+def getConvAutoEncoderModel(input_length):#, x_train, x_test):
+    #x_train = np.resize(x_train, (x_train.shape[0], input_length, 1)).astype(np.float32)
+    #x_test = np.resize(x_test, (x_test.shape[0], input_length, 1)).astype(np.float32)   
     input_sample = Input(shape=(input_length, 1))
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
     x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
@@ -28,16 +28,16 @@ def getConvAutoEncoderModel(input_length, x_train, x_test):
     decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
     
     autoencoder = Model(input_sample, decoded)
-    autoencoder.summary()
-    encoder = Model(input=input_sample, output=encoded)
-    encoder.summary()
-    encoded_input = Input(shape=(128,))
-    decoder_layers = autoencoder.layers[9:]
-    decoder = Model(input=encoded_input, output=decoder_layers(encoded_input))
-    decoder.summary()
+    #autoencoder.summary()
+    #encoder = Model(input=input_sample, output=encoded)
+    #encoder.summary()
+    #encoded_input = Input(shape=(128,))
+    #decoder_layers = autoencoder.layers[9:]
+    #decoder = Model(input=encoded_input, output=decoder_layers(encoded_input))
+    #decoder.summary()
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
-    print autoencoder.summary()
+    autoencoder.summary()
     weights_filename = 'weights_conv.dat'
     if os.path.isfile(weights_filename):
         print 'Loading the model...'
@@ -54,7 +54,7 @@ def getConvAutoEncoderModel(input_length, x_train, x_test):
         print 'Trained the model in', trainEnd - trainStart, 'seconds'
         print 'Saving the model...'
         autoencoder.save_weights(weights_filename, True)
-    return encoder, decoder
+    return autoencoder
     
 def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
 
@@ -101,7 +101,7 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
         autoencoder.save_weights(weights_filename, True)
     return encoder, decoder
 
-def getEncoder(input_length):
+def getEncoderModel(input_length, ae_weights=0):
     input_sample = Input(shape=(input_length, 1))
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
     x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
@@ -115,7 +115,7 @@ def getEncoder(input_length):
     encoder.summary()
     return encoder
 
-def getDecoder(encoded_length):
+def getDecoderModel(encoded_length, ae_weights=0):
     encoded = Input(shape=(encoded_length, 1))
     x = UpSampling1D(length=2)(encoded)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
@@ -128,3 +128,55 @@ def getDecoder(encoded_length):
     decoder = Model(encoded, decoded)
     decoder.summary()
     return decoder
+
+def getSplitConvAutoEncoder():
+    ae = getConvAutoEncoderModel(2048)
+    encoder = getEncoderModel(2048)
+    decoder = getDecoderModel(128)
+    e_nb_layers = len(encoder.layers)
+    d_nb_layers = len(decoder.layers)
+    ae_nb_layers = len(ae.layers)
+    print('Encoder:......', e_nb_layers)
+    print('Decoder:......', d_nb_layers)
+    print('Autoencoder:..', ae_nb_layers)
+    for i in range(e_nb_layers):
+        encoder.layers[i].set_weights(ae.layers[i].get_weights())
+    
+    for i in range(1, d_nb_layers): #we start at 1 so skip the first layer, this is the added input layer for the decoder
+        ae_index = i + e_nb_layers - 1
+        #print 'd_index', i, 'ae_index', ae_index
+        decoder.layers[i].set_weights(ae.layers[ae_index].get_weights())    
+    
+    encoder.compile(optimizer='adadelta', loss='mean_squared_error')
+    decoder.compile(optimizer='adadelta', loss='mean_squared_error')
+    return encoder, decoder
+
+encoder, decoder = getSplitConvAutoEncoder()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

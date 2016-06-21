@@ -171,4 +171,33 @@ def loadDrums2(timesteps, sr = 2048):
     print(x_train.shape)
     print(y_train.shape)
     return x_train, y_train
-    
+   
+
+def loadDrumsConv(timesteps, pack_size = 512, sr = 44100):
+    from os import listdir
+    rootdir = '../data/drums/'
+
+    audiofiles = []
+    for i, file in enumerate(list(root)):
+        y, sr = librosa.load(rootdit+file, sr=sr)
+        audiofiles.append(y)
+        break
+
+    print audiofiles[0].shape
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
