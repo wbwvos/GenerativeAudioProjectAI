@@ -27,10 +27,14 @@ def getConvAutoEncoderModel(input_length, x_train, x_test):
     x = UpSampling1D(length=2)(x)
     decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
     
-    encoder = Model(input=input_sample, output=encoded)
-    encoded_input = Input(shape=(encoded.output_shape))
-    decoder = Model(input=encoded, output=decoded(encoded_input))
     autoencoder = Model(input_sample, decoded)
+    autoencoder.summary()
+    encoder = Model(input=input_sample, output=encoded)
+    encoder.summary()
+    encoded_input = Input(shape=(128,))
+    decoder_layers = autoencoder.layers[9:]
+    decoder = Model(input=encoded_input, output=decoder_layers(encoded_input))
+    decoder.summary()
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
     print autoencoder.summary()
@@ -96,3 +100,9 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
         print 'Saving the model...'
         autoencoder.save_weights(weights_filename, True)
     return encoder, decoder
+
+def getEncoder():
+    
+
+def getDecoder():
+
