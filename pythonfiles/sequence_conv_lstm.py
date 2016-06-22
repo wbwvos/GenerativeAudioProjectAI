@@ -68,9 +68,12 @@ else:
 
 
 print('Predicting')
-prime = x_train_e[:batch_size*80]
+prime_secs = 5
+gen_secs = 10
+samples_per_sec = 86
+prime = x_train_e[:batch_size*samples_per_sec*prime_secs]
 print('prime shape:', prime.shape)
-generations = batch_size*80
+generations = batch_size*samples_per_sec*gen_secs
 print('Predicting prime')
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 print(predicted_output.shape)
