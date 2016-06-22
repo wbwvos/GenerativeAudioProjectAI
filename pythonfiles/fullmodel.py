@@ -76,15 +76,18 @@ generations = batch_size*10
 print('Predicting prime')
 i=0
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
-prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
+
 while(i<1000):
-    prime = np.resize(prime, (1, prime.shape[0], 1))
+    if i == 0:
+        prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
+    else:
+       prime = np.append(prime, predicted_output)
+       prime = prime[1:]
+    
     print(prime.shape)
+    
     predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
-    prime = np.append(prime, predicted_output) 
-    print(prime)
-    print(prime.shape)
-    prime = prime[1:]
+    
     total = np.append(total, predicted_output)
     i+=1
 
