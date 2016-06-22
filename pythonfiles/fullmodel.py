@@ -68,13 +68,18 @@ else:
 
 
 
-
+total = []
 print('Predicting')
 prime = x_train[:batch_size]
 print('prime shape:', prime.shape)
 generations = batch_size*10
 print('Predicting prime')
-predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
+while(i<1000):
+    predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
+    prime = np.append(prime[1:], predicted_output[-1])
+    total = np.append(total, predicted_output[-1])
+    i++
+
 print(predicted_output)
 print(predicted_output.shape)
 #print(predicted_output)
