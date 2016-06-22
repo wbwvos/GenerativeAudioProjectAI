@@ -177,20 +177,26 @@ def loadDrumsConv(timesteps, pack_size = 512, sr = 44100):
     from os import listdir
     rootdir = '../data/drums/'
 
-    audiofiles = []
-    for i, file in enumerate(list(root)):
-        y, sr = librosa.load(rootdit+file, sr=sr)
-        audiofiles.append(y)
-        break
+    #audiofiles = []
+    #for i, file in enumerate(listdir(rootdir)):
+    y, sr = librosa.load(rootdir+listdir(rootdir)[0], sr=sr)
+    #    audiofiles.append(y)
+    #    break
+    #audiofile = audiofiles[0]
+    max_len = len(y) % pack_size
+    y = y[:-max_len]
+    slices = np.reshape(y, (len(y)/pack_size,pack_size, 1))
+    return slices[:-1], slices[1:]
 
-    print audiofiles[0].shape
+def encodeDrums(slices, encoder):
+    encoded = encoder.predict(slices)
+    print(encoded.shape)
+    return encoded
 
-
-
-
-
-
-
+def decodeDrums(encoded, decoder):
+    decoded = decoder.predict(encoded)
+    print(decoded.shape)
+    return decoded
 
 
 
