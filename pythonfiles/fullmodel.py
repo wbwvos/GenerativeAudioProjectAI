@@ -5,14 +5,15 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Convolution1D, AveragePooling1D, TimeDistributed, Flatten
+from keras.layers import Dense, LSTM, Convolution1D, AveragePooling1D, MaxPooling1D, TimeDistributed, Flatten, Activation
 import openWav
 import time
 import os.path
 
 # since we are using stateful rnn tsteps can be set to 1
-tsteps = 64*4
-batch_size = tsteps
+tsteps = 16384
+#tsteps = 256
+batch_size = 1
 epochs = 10
 # number of elements ahead that are used to make the prediction
 lahead = 1
@@ -21,22 +22,21 @@ outputsize = 1
 x_train, y_train = openWav.loadDrums2(tsteps, sr)
 x_train = x_train[0]
 y_train = y_train[0]
-print(x_train[0].shape)
-print(y_train[0].shape)
+print(x_train.shape)
+print(y_train.shape)
 
 print('Creating Model')
 model = Sequential()
 
-model.add(Convolution1D(32, 32, border_mode='same', activation="tanh", batch_input_shape=(batch_size, tsteps, 1)))
-model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
-model.add(Convolution1D(32, 32, border_mode='same', activation="tanh"))
-model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
-model.add(Convolution1D(32, 16, border_mode='same', activation="tanh"))
-model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
-model.add(Convolution1D(8, 1, border_mode='same', activation="tanh"))
-model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(32, 3, border_mode='same', activation="tanh", batch_input_shape=(batch_size, tsteps, 1)))
+model.add(Convolution1D(32, 3, border_mode='same', activation="tanh"))
+model.add(MaxPooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(64, 3, border_mode='same', activation="tanh"))
+model.add(MaxPooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(64, 3, border_mode='same', activation="tanh"))
+model.add(MaxPooling1D(pool_length=2, stride=None, border_mode="valid"))
 
-model.add(LSTM(50,
+model.add(LSTM(256,
                
                return_sequences=False,
                stateful=False))
@@ -45,7 +45,7 @@ model.add(Dense(outputsize))
 
 model.compile(loss='mse', optimizer='rmsprop')
 model.summary()
-weights_filename = 'weights_fullmodel.dat'
+weights_filename = 'weights_fullmodel_8sec_timestep.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)
@@ -77,9 +77,12 @@ print('Predicting prime')
 i=0
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 
-while(i<1000):
+while(i<16384):
     if i == 0:
-        prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
+        #prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
+	prime = np.append(prime, predicted_output[-1]
+        prime = prime[1:]
+        total = np.append(total, predicted_output)
     else:
        prime = np.append(prime, predicted_output)
        prime = prime[1:]
@@ -90,7 +93,7 @@ while(i<1000):
     
     total = np.append(total, predicted_output)
     i+=1
-
+    print(i)
 print(predicted_output)
 print(predicted_output.shape)
 #print(predicted_output)
@@ -118,7 +121,7 @@ import pickle
 #print('Saved predicted_output to predicted.p')
 #pickle.dump(prime, open('expected.p','wb'))
 #print('Saved expected_output to expected.p')
-pickle.dump(total, open('fullmodel_generated.p','wb'))
+pickle.dump(total, open('fullmodel_generated_8sec_timestep.p','wb'))
 #print('Saved generated_output to generated.p')
 
 #
