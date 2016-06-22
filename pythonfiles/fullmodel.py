@@ -74,11 +74,14 @@ prime = x_train[:batch_size]
 print('prime shape:', prime.shape)
 generations = batch_size*10
 print('Predicting prime')
+i=0
 while(i<1000):
     predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
+    print(predicted_output.shape)
+    break
     prime = np.append(prime[1:], predicted_output[-1])
     total = np.append(total, predicted_output[-1])
-    i++
+    i+=1
 
 print(predicted_output)
 print(predicted_output.shape)
@@ -107,7 +110,7 @@ import pickle
 #print('Saved predicted_output to predicted.p')
 #pickle.dump(prime, open('expected.p','wb'))
 #print('Saved expected_output to expected.p')
-#pickle.dump(total, open('fullmodel_generated.p','wb'))
+pickle.dump(total, open('fullmodel_generated.p','wb'))
 #print('Saved generated_output to generated.p')
 
 #
