@@ -79,11 +79,12 @@ predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 
 while(i<1000):
     prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
+    print(prime.shape)
     predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
     prime = np.append(prime, predicted_output) 
     print(prime)
+    print(prime.shape)
     prime = prime[1:]
-    break
     total = np.append(total, predicted_output)
     i+=1
 
