@@ -11,32 +11,36 @@ import time
 import os.path
 
 # since we are using stateful rnn tsteps can be set to 1
-tsteps = 64
+tsteps = 64*4
 batch_size = tsteps
-epochs = 5
+epochs = 10
 # number of elements ahead that are used to make the prediction
 lahead = 1
 sr = 2048
 outputsize = 1
 x_train, y_train = openWav.loadDrums2(tsteps, sr)
-#x_train = x_train[0]
+x_train = x_train[0]
 y_train = y_train[0]
-print(x_train.shape)
+print(x_train[0].shape)
+print(y_train[0].shape)
 
 print('Creating Model')
 model = Sequential()
 
-model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh"), input_shape=(batch_size, tsteps, 1)))
-model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
-model.add(TimeDistributed(Convolution1D(32, 32, border_mode='same', activation="tanh")))
-model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
-model.add(TimeDistributed(Convolution1D(32, 16, border_mode='same', activation="tanh")))
-model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
-model.add(TimeDistributed(Convolution1D(8, 1, border_mode='same', activation="tanh")))
-model.add(TimeDistributed(AveragePooling1D(pool_length=2, stride=None, border_mode="valid")))
-model.add(TimeDistributed(Flatten()))
+model.add(Convolution1D(32, 32, border_mode='same', activation="tanh", batch_input_shape=(batch_size, tsteps, 1)))
+model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(32, 32, border_mode='same', activation="tanh"))
+model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(32, 16, border_mode='same', activation="tanh"))
+model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
+model.add(Convolution1D(8, 1, border_mode='same', activation="tanh"))
+model.add(AveragePooling1D(pool_length=2, stride=None, border_mode="valid"))
 
-model.add(LSTM(50))
+model.add(LSTM(50,
+               
+               return_sequences=False,
+               stateful=False))
+               
 model.add(Dense(outputsize))
 
 model.compile(loss='mse', optimizer='rmsprop')
@@ -66,26 +70,29 @@ else:
 
 
 print('Predicting')
-prime = x_train[:batch_size*100]
+prime = x_train[:batch_size]
 print('prime shape:', prime.shape)
 generations = batch_size*10
 print('Predicting prime')
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
-#print(predicted_output.shape)
+print(predicted_output)
+print(predicted_output.shape)
 #print(predicted_output)
 #print(len(predicted_output))
-total = predicted_output
+#total = predicted_output
 print('total generations:', generations)
-for i in range(generations):
-    last_batch = total[-batch_size*batch_size:]
-    #print('last batch shape:', last_batch.shape)
-    last_batch = np.resize(last_batch, (last_batch.shape[0]/batch_size, batch_size, 1))
-    #print('last batch shape:', last_batch.shape)
-    predicted_output_batch = model.predict(last_batch, batch_size=batch_size)
-    predicted_value = predicted_output_batch[-1]
-    total = np.append(total, predicted_value)
-    if i % 64 == 0:
-        print(i, 'predicted:' ,predicted_value)
+#for i in range(generations):
+#    last_batch = total[-batch_size*batch_size:]
+#    #print('last batch shape:', last_batch.shape)
+#    last_batch = np.resize(last_batch, (last_batch.shape[0]/batch_size, batch_size, 1))
+#    #print('last batch shape:', last_batch.shape)
+#    predicted_output_batch = model.predict(last_batch, batch_size=batch_size)
+#    print(predicted_output_batch)
+#    break
+#    predicted_value = predicted_output_batch[-1]
+#    total = np.append(total, predicted_value)
+#    if i % 64 == 0:
+#        print(i, 'predicted:' ,predicted_value)
     #print(total[-10:])
      
 
@@ -95,8 +102,8 @@ import pickle
 #print('Saved predicted_output to predicted.p')
 #pickle.dump(prime, open('expected.p','wb'))
 #print('Saved expected_output to expected.p')
-pickle.dump(total, open('generated.p','wb'))
-print('Saved generated_output to generated.p')
+#pickle.dump(total, open('fullmodel_generated.p','wb'))
+#print('Saved generated_output to generated.p')
 
 #
 #print('Ploting Results')
