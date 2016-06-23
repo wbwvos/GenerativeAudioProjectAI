@@ -68,10 +68,11 @@ else:
 
 
 print('Predicting')
-prime_secs = 5
-gen_secs = 10
+prime_secs = 10
+gen_secs = 30
 samples_per_sec = 86
 prime = x_train_e[:batch_size*samples_per_sec*prime_secs]
+print('prime time:', batch_size*samples_per_sec*prime_secs*16)
 print('prime shape:', prime.shape)
 generations = batch_size*samples_per_sec*gen_secs
 print('Predicting prime')
