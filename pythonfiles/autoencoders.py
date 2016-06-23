@@ -108,13 +108,13 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
 def getEncoderModel(input_length, ae_weights=0):
     input_sample = Input(shape=(input_length, 1))
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
-    encoded = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    encoded = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     encoder = Model(input_sample, encoded)
     #encoder.summary()
     return encoder
