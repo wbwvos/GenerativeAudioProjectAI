@@ -79,7 +79,7 @@ predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 print(predicted_output.shape)
 #print(predicted_output)
 #print(len(predicted_output))
-total = predicted_output
+total = prime
 print('total generations:', generations)
 for i in range(generations):
     print('totalshape:', total.shape)

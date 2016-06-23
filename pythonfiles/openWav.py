@@ -140,9 +140,11 @@ def loadDrums2(timesteps, sr = 2048):
     #audiofiles = [[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]]
     
     for i, file in enumerate(listdir(rootdir)):
-        y, sr = librosa.load(rootdir+file, sr=sr)
-        audiofiles.append(y)
-        break
+        print(file)
+	if(i==4):
+        	y, sr = librosa.load(rootdir+file, sr=sr)
+        	audiofiles.append(y[:len(y)/6])
+        	break
         
     
     #train = audiofiles
@@ -151,7 +153,7 @@ def loadDrums2(timesteps, sr = 2048):
     trainexample = []
     exampleY = []
     xy_dim = timesteps+1
-    
+    #even maar alleen 2 drumloops geladen
     for i in range(0, len(audiofiles)):
         for j in range(0, xy_dim):
             if(j == xy_dim-1): 
