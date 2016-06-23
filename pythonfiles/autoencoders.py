@@ -1,4 +1,4 @@
-from keras.layers import Input, Dense, Convolution1D, AveragePooling1D, UpSampling1D
+from keras.layers import Input, Dense, Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.noise import GaussianDropout
 from keras.models import Model
 import numpy as np
@@ -11,14 +11,14 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
     #x_test = np.resize(x_test, (x_test.shape[0], input_length, 1)).astype(np.float32)   
     input_sample = Input(shape=(input_length, 1))
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     #x = GaussianDropout(0.1)(x)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
-    x = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
-    encoded = AveragePooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    encoded = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     #output = 128,1
     x = UpSampling1D(length=2)(encoded)
     x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
@@ -42,7 +42,7 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
     #autoencoder.summary()
-    weights_filename = 'weights_conv.dat'
+    weights_filename = 'weights_conv_maxpooling.dat'
     if os.path.isfile(weights_filename):
         print 'Loading the model...'
         autoencoder.load_weights(weights_filename)
@@ -158,7 +158,6 @@ def getSplitConvAutoEncoder():
     return encoder, decoder
 
 #encoder, decoder = getSplitConvAutoEncoder()
-
 
 
 
