@@ -79,7 +79,8 @@ predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
 print(predicted_output.shape)
 #print(predicted_output)
 #print(len(predicted_output))
-total = prime
+total = np.reshape(prime, (prime.shape[0], prime.shape[1]))
+
 print('total generations:', generations)
 for i in range(generations):
     print('totalshape:', total.shape)
@@ -89,6 +90,7 @@ for i in range(generations):
     print('last batch shape:', last_batch.shape)
     predicted_output_batch = model.predict(last_batch, batch_size=batch_size, verbose=True)
     predicted_value = predicted_output_batch[-1]
+    print('total:', total.shape, 'predicted_value:', predicted_value.shape)
     total = np.vstack([total, predicted_value])
     #if i % 64 == 0:
     #print(i, 'predicted:', predicted_value)
