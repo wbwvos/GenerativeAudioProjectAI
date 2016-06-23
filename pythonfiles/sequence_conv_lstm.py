@@ -44,7 +44,7 @@ model.add(Dense(32))
 model.compile(loss='mse', optimizer='rmsprop')
 model.summary()
 
-weights_filename = 'weights_conv_sequence_lstm.dat'
+weights_filename = 'weights_conv_sequence_lstm_maxpooling.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)
