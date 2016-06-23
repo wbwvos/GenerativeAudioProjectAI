@@ -1,6 +1,7 @@
 from keras.layers import Input, Dense, Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.noise import GaussianDropout
 from keras.models import Model
+from keras.utils.visualize_util import plot
 import numpy as np
 import time
 import os.path
@@ -42,6 +43,7 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
     #autoencoder.summary()
+    plot(autoencoder, to_file='conv_autoencoder.png', show_shapes=True)
     weights_filename = 'weights_conv_maxpooling.dat'
     if os.path.isfile(weights_filename):
         print 'Loading the model...'
@@ -116,7 +118,7 @@ def getEncoderModel(input_length, ae_weights=0):
     x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
     encoded = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     encoder = Model(input_sample, encoded)
-    #encoder.summary()
+    plot(encoder, to_file='conv_encoder.png', show_shapes=True)
     return encoder
 
 def getDecoderModel(encoded_length, ae_weights=0):
@@ -130,7 +132,7 @@ def getDecoderModel(encoded_length, ae_weights=0):
     x = UpSampling1D(length=2)(x)
     decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
     decoder = Model(encoded, decoded)
-    #decoder.summary()
+    plot(decoder, to_file='conv_decoder.png', show_shapes=True)
     return decoder
 
 def getSplitConvAutoEncoder():
