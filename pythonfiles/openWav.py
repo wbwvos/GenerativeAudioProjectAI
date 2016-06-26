@@ -177,18 +177,26 @@ def loadDrums2(timesteps, sr = 2048):
 
 def loadDrumsConv(timesteps, pack_size = 512, sr = 44100):
     from os import listdir
+    import autoencoders as ae
     rootdir = '../data/drums/'
 
     #audiofiles = []
     #for i, file in enumerate(listdir(rootdir)):
-    y, sr = librosa.load(rootdir+listdir(rootdir)[0], sr=sr)
+    y, sr = librosa.load(rootdir+listdir(rootdir)[-1], sr=sr)
     #    audiofiles.append(y)
     #    break
     #audiofile = audiofiles[0]
     max_len = len(y) % pack_size
     y = y[:-max_len]
     slices = np.reshape(y, (len(y)/pack_size,pack_size, 1))
-    return slices[:-1], slices[1:]
+    encoder, decoder = ae.getSplitConvAutoEncoder()
+    slices = encodeDrums(slices, encoder)
+    
+    x_slices = slices[:-(timesteps+1)]
+    for i in range(timesteps-1):
+        x_slices = np.hstack([x_slices, slices[i:-(timesteps-i+1)]])
+    y_slices = slices[timesteps:]
+    return x_slices, y_slices
 
 def encodeDrums(slices, encoder):
     encoded = encoder.predict(slices)

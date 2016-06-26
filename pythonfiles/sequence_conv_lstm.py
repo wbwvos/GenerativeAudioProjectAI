@@ -18,10 +18,11 @@ dim = 32
 # number of elements ahead that are used to make the prediction
 sr = 44100
 conv_pack_input_size = 512
-x_train, y_train = openWav.loadDrumsConv(tsteps, conv_pack_input_size, sr)
+nb_slices = 40
+x_train_e, y_train_e = openWav.loadDrumsConv(nb_slices, conv_pack_input_size, sr)
 encoder, decoder = ae.getSplitConvAutoEncoder()
-x_train_e = openWav.encodeDrums(x_train, encoder)
-y_train_e = openWav.encodeDrums(y_train, encoder)
+#x_train_e = openWav.encodeDrums(x_train, encoder)
+#y_train_e = openWav.encodeDrums(y_train, encoder)
 #x_train = x_train[0]
 #y_train = y_train[0]
 
@@ -33,7 +34,7 @@ print(y_train_e.shape)
 print('Creating Model')
 model = Sequential()
 model.add(LSTM(128,
-               batch_input_shape=(batch_size, tsteps, dim),
+               batch_input_shape=(batch_size, tsteps, dim*nb_slices),
                return_sequences=True,
                stateful=True))
 model.add(LSTM(128,
@@ -44,7 +45,7 @@ model.add(Dense(32))
 model.compile(loss='mse', optimizer='rmsprop')
 model.summary()
 
-weights_filename = 'weights_conv_sequence_lstm_maxpooling.dat'
+weights_filename = 'weights_conv_sequence_lstm_mp_40slices.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)
@@ -69,9 +70,9 @@ else:
 
 print('Predicting')
 prime_secs = 10
-gen_secs = 30
+gen_secs = 20
 samples_per_sec = 86
-prime = x_train_e[:batch_size*samples_per_sec*prime_secs]
+prime = x_train_e[:batch_size*samples_per_sec*prime_secs*nb_slices]
 print('prime time:', batch_size*samples_per_sec*prime_secs*16)
 print('prime shape:', prime.shape)
 generations = batch_size*samples_per_sec*gen_secs
@@ -81,13 +82,14 @@ print(predicted_output.shape)
 #print(predicted_output)
 #print(len(predicted_output))
 total = np.reshape(prime, (prime.shape[0], prime.shape[1]))
-
+total = total[:,:dim]
+print('totaldim', total.shape)
 print('total generations:', generations)
 for i in range(generations):
     print('totalshape:', total.shape)
-    last_batch = total[-batch_size]
+    last_batch = total[-batch_size*nb_slices:,:]
     print('last batch shape:', last_batch.shape)
-    last_batch = np.reshape(last_batch, (batch_size, dim, 1))
+    last_batch = np.reshape(last_batch, (batch_size, dim*nb_slices, 1))
     print('last batch shape:', last_batch.shape)
     predicted_output_batch = model.predict(last_batch, batch_size=batch_size, verbose=True)
     predicted_value = predicted_output_batch[-1]

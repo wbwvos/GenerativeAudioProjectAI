@@ -11,10 +11,11 @@ import time
 import os.path
 
 # since we are using stateful rnn tsteps can be set to 1
-tsteps = 16384
+#6 seconds
+tsteps = 12288
 #tsteps = 256
 batch_size = 1
-epochs = 10
+epochs = 1
 # number of elements ahead that are used to make the prediction
 lahead = 1
 sr = 2048
@@ -45,7 +46,7 @@ model.add(Dense(outputsize))
 
 model.compile(loss='mse', optimizer='rmsprop')
 model.summary()
-weights_filename = 'weights_fullmodel_8sec_timestep.dat'
+weights_filename = 'weights_fullmodel_6sec_timestep.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)
@@ -76,19 +77,20 @@ generations = batch_size*10
 print('Predicting prime')
 i=0
 predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
-
-while(i<16384):
+#6seconds
+while(i<2048):
     if i == 0:
         #prime = np.resize(predicted_output, (1, predicted_output.shape[0], 1))
-	prime = np.append(prime, predicted_output[-1]
+	prime = np.append(prime, predicted_output[-1])
         prime = prime[1:]
+        prime = np.resize(prime, (1, prime.shape[0],1))
         total = np.append(total, predicted_output)
     else:
        prime = np.append(prime, predicted_output)
        prime = prime[1:]
        prime = np.resize(prime, (1, prime.shape[0], 1))
     print(prime.shape)
-    
+    print(i)
     predicted_output = model.predict(prime, batch_size=batch_size, verbose=True)
     
     total = np.append(total, predicted_output)
@@ -121,7 +123,7 @@ import pickle
 #print('Saved predicted_output to predicted.p')
 #pickle.dump(prime, open('expected.p','wb'))
 #print('Saved expected_output to expected.p')
-pickle.dump(total, open('fullmodel_generated_8sec_timestep.p','wb'))
+pickle.dump(total, open('fullmodel_generated_6sec_timestep.p','wb'))
 #print('Saved generated_output to generated.p')
 
 #

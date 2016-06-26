@@ -9,6 +9,7 @@ from keras.layers import Dense, LSTM
 import openWav
 import time
 import os.path
+from keras.utils.visualize_util import plot
 
 # since we are using stateful rnn tsteps can be set to 1
 tsteps = 64*4
@@ -34,7 +35,7 @@ model.add(LSTM(50,
                stateful=True))
 model.add(Dense(1))
 model.compile(loss='mse', optimizer='rmsprop')
-
+plot(model, to_file='sequence_lstm.png', show_shapes=True)
 weights_filename = 'weights_sequence_lstm.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
