@@ -18,7 +18,7 @@ dim = 32
 # number of elements ahead that are used to make the prediction
 sr = 44100
 conv_pack_input_size = 512
-nb_slices = 40
+nb_slices = 2
 x_train_e, y_train_e = openWav.loadDrumsConv(nb_slices, conv_pack_input_size, sr)
 encoder, decoder = ae.getSplitConvAutoEncoder()
 #x_train_e = openWav.encodeDrums(x_train, encoder)
@@ -45,7 +45,7 @@ model.add(Dense(32))
 model.compile(loss='mse', optimizer='rmsprop')
 model.summary()
 
-weights_filename = 'weights_conv_sequence_lstm_mp_40slices.dat'
+weights_filename = 'weights_conv_sequence_lstm_mp_' + str(nb_slices) + 'slices.dat'
 if os.path.isfile(weights_filename):
     print('Loading the model...')
     model.load_weights(weights_filename)
@@ -70,7 +70,7 @@ else:
 
 print('Predicting')
 prime_secs = 10
-gen_secs = 20
+gen_secs = 10
 samples_per_sec = 86
 prime = x_train_e[:batch_size*samples_per_sec*prime_secs*nb_slices]
 print('prime time:', batch_size*samples_per_sec*prime_secs*16)
@@ -86,26 +86,26 @@ total = total[:,:dim]
 print('totaldim', total.shape)
 print('total generations:', generations)
 for i in range(generations):
-    print('totalshape:', total.shape)
+    #print('totalshape:', total.shape)
     last_batch = total[-batch_size*nb_slices:,:]
-    print('last batch shape:', last_batch.shape)
+    #print('last batch shape:', last_batch.shape)
     last_batch = np.reshape(last_batch, (batch_size, dim*nb_slices, 1))
-    print('last batch shape:', last_batch.shape)
+    #print('last batch shape:', last_batch.shape)
     predicted_output_batch = model.predict(last_batch, batch_size=batch_size, verbose=True)
     predicted_value = predicted_output_batch[-1]
-    print('total:', total.shape, 'predicted_value:', predicted_value.shape)
+    #print('total:', total.shape, 'predicted_value:', predicted_value.shape)
     total = np.vstack([total, predicted_value])
     #if i % 64 == 0:
     #print(i, 'predicted:', predicted_value)
     #model.reset_states()
     #print(total[-10:])
-     
+print('done generating')     
 
-print('total.shape:', total.shape)
+#print('total.shape:', total.shape)
 
 
 total = np.reshape(total, (total.shape[0], total.shape[1] , 1))
-print('total.shape', total.shape)
+#print('total.shape', total.shape)
 sound = openWav.decodeDrums(total, decoder)
 
 print(sound.shape)
@@ -116,7 +116,7 @@ import pickle
 #print('Saved predicted_output to predicted.p')
 #pickle.dump(prime, open('expected.p','wb'))
 #print('Saved expected_output to expected.p')
-pickle.dump(sound, open('generated_sound.p','wb'))
+pickle.dump(sound, open('generated_sound_' + str(nb_slices) +'.p','wb'))
 print('Saved generated_output to generated_sound.p')
 
 #
