@@ -182,7 +182,7 @@ def loadDrumsConv(timesteps, pack_size = 512, sr = 44100):
 
     #audiofiles = []
     #for i, file in enumerate(listdir(rootdir)):
-    y, sr = librosa.load(rootdir+listdir(rootdir)[-1], sr=sr)
+    y, sr = librosa.load(rootdir+listdir(rootdir)[0], sr=sr)
     #    audiofiles.append(y)
     #    break
     #audiofile = audiofiles[0]

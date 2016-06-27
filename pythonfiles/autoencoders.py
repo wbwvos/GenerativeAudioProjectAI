@@ -11,26 +11,26 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
     #x_train = np.resize(x_train, (x_train.shape[0], input_length, 1)).astype(np.float32)
     #x_test = np.resize(x_test, (x_test.shape[0], input_length, 1)).astype(np.float32)   
     input_sample = Input(shape=(input_length, 1))
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
-    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = Convolution1D(32, 11, border_mode='same', activation="tanh")(input_sample)
+    #x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     #x = GaussianDropout(0.1)(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(32, 5, border_mode='same', activation="tanh")(x)
     x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     encoded = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    #output = 128,1
+    
     x = UpSampling1D(length=2)(encoded)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = UpSampling1D(length=2)(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = UpSampling1D(length=2)(x)
     #x = GaussianDropout(0.25)(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
-    x = UpSampling1D(length=2)(x)
+    x = Convolution1D(32, 5, border_mode='same', activation="tanh")(x)
+    #x = UpSampling1D(length=2)(x)
     #x = GaussianDropout(0.1)(x)
-    decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
+    decoded = Convolution1D(32, 11, border_mode='same', activation="tanh")(x)
     
     autoencoder = Model(input_sample, decoded)
     #autoencoder.summary()
@@ -42,9 +42,9 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
     #decoder.summary()
     
     autoencoder.compile(optimizer='adadelta', loss='mean_squared_error')
-    #autoencoder.summary()
+    autoencoder.summary()
     #plot(autoencoder, to_file='conv_autoencoder.png', show_shapes=True)
-    weights_filename = 'weights_conv_maxpooling.dat'
+    weights_filename = 'weights_conv_maxpooling_exp1.dat'
     if os.path.isfile(weights_filename):
         print 'Loading the model...'
         autoencoder.load_weights(weights_filename)
@@ -61,7 +61,28 @@ def getConvAutoEncoderModel(input_length, x_train = None, x_test=None):
         print 'Saving the model...'
         autoencoder.save_weights(weights_filename, True)
     return autoencoder
-    
+   
+def trainConvAutoEncoder():
+    from os import listdir
+    import librosa
+    rootdir = '../data/drums/'
+
+    y, sr = librosa.load(rootdir+listdir(rootdir)[0], sr=None)
+    print(sr)
+    data = y[:(len(y)/512)*512]
+    print(data.shape)
+    data = np.reshape(data, (data.shape[0]/512, 512, 1))
+    #data = y[:-512]
+    #print(data.shape)
+    #for i in range(0, 512):
+    #    print(i)
+    #    data = np.vstack([data, y[i*4 :-(512-i)]])
+    #print(data.shape)
+    getConvAutoEncoderModel(512, data, data)
+
+trainConvAutoEncoder()
+
+ 
 def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
 
     # this is our input placeholder
@@ -109,13 +130,13 @@ def getSimpleAutoEncoderModel(input_length, x_train, x_test, encoding_dim=1024):
 
 def getEncoderModel(input_length, ae_weights=0):
     input_sample = Input(shape=(input_length, 1))
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(input_sample)
+    x = Convolution1D(32, 11, border_mode='same', activation="tanh")(input_sample)
+    #x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
+    x = Convolution1D(32, 5, border_mode='same', activation="tanh")(x)
     x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    x = Convolution1D(32, 16, border_mode='same', activation="tanh")(x)
-    x = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
-    x = Convolution1D(1, 8, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     encoded = MaxPooling1D(pool_length=2, stride=None, border_mode="valid")(x)
     encoder = Model(input_sample, encoded)
     #plot(encoder, to_file='conv_encoder.png', show_shapes=True)
@@ -124,13 +145,13 @@ def getEncoderModel(input_length, ae_weights=0):
 def getDecoderModel(encoded_length, ae_weights=0):
     encoded = Input(shape=(encoded_length, 1))
     x = UpSampling1D(length=2)(encoded)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = UpSampling1D(length=2)(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(64, 3, border_mode='same', activation="tanh")(x)
     x = UpSampling1D(length=2)(x)
-    x = Convolution1D(32, 32, border_mode='same', activation="tanh")(x)
-    x = UpSampling1D(length=2)(x)
-    decoded = Convolution1D(1, 32, border_mode='same', activation="tanh")(x)
+    x = Convolution1D(32, 5, border_mode='same', activation="tanh")(x)
+    #x = UpSampling1D(length=2)(x)
+    decoded = Convolution1D(32, 11, border_mode='same', activation="tanh")(x)
     decoder = Model(encoded, decoded)
     #plot(decoder, to_file='conv_decoder.png', show_shapes=True)
     return decoder

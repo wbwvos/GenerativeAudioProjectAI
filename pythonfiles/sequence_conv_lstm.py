@@ -50,7 +50,7 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     model.compile(loss='mse', optimizer='rmsprop')
     model.summary()
     
-    weights_filename = 'weights_conv_sequence_lstm_mp_' + str(nb_slices) + 'slices.dat'
+    weights_filename = 'weights_conv_sequence_lstm_mp_exp1_' + str(nb_slices) + 'slices.dat'
     if os.path.isfile(weights_filename):
         print('Loading the model...')
         model.load_weights(weights_filename)
@@ -77,7 +77,7 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     prime_secs = 10
     gen_secs = 10
     samples_per_sec = 86
-    prime = x_train_e[:batch_size*samples_per_sec*prime_secs*nb_slices]
+    prime = x_train_e[:batch_size*samples_per_sec*prime_secs]
     print('prime time:', batch_size*samples_per_sec*prime_secs*16)
     print('prime shape:', prime.shape)
     generations = batch_size*samples_per_sec*gen_secs
@@ -121,7 +121,7 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     #print('Saved predicted_output to predicted.p')
     #pickle.dump(prime, open('expected.p','wb'))
     #print('Saved expected_output to expected.p')
-    pickle.dump(sound, open('generated_sound_' + str(nb_slices) +'.p','wb'))
+    pickle.dump(sound, open('generated_sound_exp1_' + str(nb_slices) +'.p','wb'))
     print('Saved generated_output to generated_sound.p')
 
 #
