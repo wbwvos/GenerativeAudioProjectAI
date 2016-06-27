@@ -13,12 +13,13 @@ import autoencoders as ae
 import pickle 
 # since we are using stateful rnn tsteps can be set to 1
 
-for nb_slices in [1,2,3,5,8,10,20,40,80]:
+for nb_slices in [1]: #[1,2,5,10]:
     print('==============================')
     print('nb_slices', nb_slices)
     tsteps = 1
     batch_size = 1
-    epochs = 5
+    epochs = 100
+    epoch_nr = 200
     dim = 32
     # number of elements ahead that are used to make the prediction
     sr = 44100
@@ -30,10 +31,18 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     #y_train_e = openWav.encodeDrums(y_train, encoder)
     #x_train = x_train[0]
     #y_train = y_train[0]
-    
+   
+    prime_secs = 10
+    gen_secs = 10
+    samples_per_sec = 86
+
+ 
     max_timesteps = (x_train_e.shape[0]/batch_size)*batch_size
     x_train_e = x_train_e[:max_timesteps]
+    x_train_e = x_train_e[:batch_size*samples_per_sec*prime_secs*2]
     y_train_e = np.reshape(y_train_e[:max_timesteps], (max_timesteps, dim))
+    y_train_e = y_train_e[:batch_size*samples_per_sec*prime_secs*2]
+
     #print(x_train_e.shape)
     #print(y_train_e.shape)
     print('Creating Model')
@@ -49,8 +58,11 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     model.add(Dense(32))
     model.compile(loss='mse', optimizer='rmsprop')
     model.summary()
+    #model.load_weights('100_weights_1.dat')
+    #weights_filename = 'weights_conv_sequence_lstm_mp_longtraining_' + str(nb_slices) + 'slices.dat'
+    #weights_filename = 'weights_conv_sequence_shorttrain_epochs_'+ str(epochs) + '_slices_' + str(nb_slices) + '.dat'
+    weights_filename = str(epoch_nr) + '_300_weights_1.dat'
     
-    weights_filename = 'weights_conv_sequence_lstm_mp_' + str(nb_slices) + 'slices.dat'
     if os.path.isfile(weights_filename):
         print('Loading the model...')
         model.load_weights(weights_filename)
@@ -58,7 +70,7 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
         print('Training the model...')
         trainStart = time.time()
         for i in range(epochs):
-            print('Epoch', i+1, '/', epochs)
+            print('Epoch', i+1+100, '/', epochs)
             model.fit(x_train_e,
                       y_train_e,
                       batch_size=batch_size,
@@ -66,6 +78,9 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
                       nb_epoch=1,
                       shuffle=False)
             model.reset_states()
+            if (i+1) % 10 == 0:
+                model.save_weights( str(i+1+100) +'_' + weights_filename, True)
+                print('Saving the model for epoch' + str(i+1+100))
         trainEnd = time.time()
         print('Trained the model in', trainEnd - trainStart, 'seconds')
         print('Saving the model...')
@@ -77,7 +92,7 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     prime_secs = 10
     gen_secs = 10
     samples_per_sec = 86
-    prime = x_train_e[:batch_size*samples_per_sec*prime_secs*nb_slices]
+    prime = x_train_e[:batch_size*samples_per_sec*prime_secs]
     print('prime time:', batch_size*samples_per_sec*prime_secs*16)
     print('prime shape:', prime.shape)
     generations = batch_size*samples_per_sec*gen_secs
@@ -121,7 +136,8 @@ for nb_slices in [1,2,3,5,8,10,20,40,80]:
     #print('Saved predicted_output to predicted.p')
     #pickle.dump(prime, open('expected.p','wb'))
     #print('Saved expected_output to expected.p')
-    pickle.dump(sound, open('generated_sound_' + str(nb_slices) +'.p','wb'))
+    #pickle.dump(sound, open('generated_sound_shorttrain_'+str(epochs)+'_' + str(nb_slices) +'.p','wb'))
+    pickle.dump(sound, open(str(epoch_nr) + '_generated.p','wb'))
     print('Saved generated_output to generated_sound.p')
 
 #
